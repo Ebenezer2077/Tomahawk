@@ -1,9 +1,11 @@
+import { mergeGeometries } from '../../99_Lib/jsm/utils/BufferGeometryUtils.js';
 import * as THREE from '../../99_Lib/three.module.min.js';
 
 const geometries = [
+    createAxe(),
     new THREE.BoxGeometry(0.25, 0.25, 0.25),
     new THREE.ConeGeometry(0.1, 0.4, 64),
-    new THREE.CylinderGeometry(0.2, 0.2, 0.2, 64),
+    new THREE.CylinderGeometry(0.01, 0.01, 0.7, 64),
     new THREE.IcosahedronGeometry(0.1, 3),
     new THREE.TorusKnotGeometry(.2, .03, 50, 16),
     new THREE.TorusGeometry(0.2, 0.04, 64, 32),
@@ -23,4 +25,14 @@ export function add(i, parent, x = 0, y = 0, z = 0) {
     object.position.set(x, y, z);
     parent.add(object);
     return object;
+}
+
+function createAxe() {
+    const first = new THREE.ConeGeometry(0.1, 0.4, 64);
+    const second = new THREE.BoxGeometry(0.25, 0.25, 0.25);
+
+    const merged = mergeGeometries([first, second])
+    return merged;
+    
+    
 }

@@ -87,7 +87,7 @@ window.onload = async function () {
         physicalBoxes.push(obj);
     }
 
-    const cursor = add(1, scene);
+    const cursor = add(0, scene);
     cursor.castShadow = true;
     mouse(cursor);
 
