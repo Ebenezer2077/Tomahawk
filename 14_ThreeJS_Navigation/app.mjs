@@ -3,6 +3,7 @@ import { keyboard, mouse } from './js/interaction2D.mjs';
 import { add, createLine, loadGLTFcb, randomMaterial, shaderMaterial } from './js/geometry.mjs';
 import { createRay } from './js/ray.mjs';
 import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js';
+import { createAxe } from './js/geometry.mjs';
 
 import { Water } from '../99_Lib/jsm//objects/Water.js';
 import { Sky } from '../99_Lib/jsm//objects/Sky.js';
@@ -34,7 +35,7 @@ window.onload = async function () {
 
     //new//
     const Physicsworld = new CANNON.World();
-    Physicsworld.gravity.set(0,-9, 0);
+    Physicsworld.gravity.set(0,-9.81, 0);
 
     const defaultMaterial = new CANNON.Material("default");
     const groundMaterial = new CANNON.Material("ground"); // Material for the ground with high friction
@@ -97,24 +98,50 @@ window.onload = async function () {
     let objects = [];
     let axe = add(0, world, 0.1, 0.2, 0);
     //axe.userData.physics = { mass: 0 };//axe
-    objects.push(axe);//axe
+    //objects.push(axe);//axe
 
-    let Axes = [];
+
+
 
     //test to include axe in physics
+    const boxShape = new CANNON.Box(new CANNON.Vec3(0.1, 0.1, 0.1));
+    const boxBody = new CANNON.Body({
+        mass: 1,          // Masse > 0 macht den Körper dynamisch (beeinflusst durch Schwerkraft)
+        shape: boxShape,  // Form des Körpers
+    });
+    boxBody.position.set(1, 10, 0);
+    Physicsworld.addBody(boxBody);
+
+    //                      Visualisierrung                 //
+    const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+
+
     function crAxe() {
+        /*
         const axeGeometry = axe.geometry;
         const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
         const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
-        const axeShape = new CANNON.Box(new CANNON.Vec3(0.125, 0.075, 0.375));
+        const axeShape = new CANNON.Box(new CANNON.Vec3(0.125, 0.075, 0.375));      //?
         const axeBody = new CANNON.Body({ mass: 1, material: defaultMaterial });
         axeBody.addShape(axeShape);
-        axeBody.position.set(0, 4, 0);
+        axeBody.position.set(0, 0, 0);
+        AXE.position.set(0.5,0.5,0.5);
         scene.add(AXE);
+        axeBody.position = {x: 1, y:1, z:1}
         Physicsworld.addBody(axeBody);
+        console.log(axeBody);
         objects.push(AXE);
+        */
+        //return { mesh: block, body: blockBody };
 
-        return {mesh: AXE, body: axeBody};
+        
+        
+
+        //return {mesh: AXE, body: axeBody};
     }
     crAxe();
     //test end
@@ -269,9 +296,13 @@ window.onload = async function () {
         } else {
             inverseHand = undefined;
         }
+        Physicsworld.step(1/60);
+        mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
+        console.log(mesh.position);
+
         renderer.render(scene, camera);
 
-        
+
     }
     renderer.setAnimationLoop(render);
 };

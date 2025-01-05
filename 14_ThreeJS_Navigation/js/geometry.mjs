@@ -82,7 +82,7 @@ const geometries = [
 
 ];
 
-function createAxe() {
+export function createAxe() {
         const AxeHandle = new THREE.CylinderGeometry(0.05, 0.05, 1.2, 64);
         //  linksrechts     hochrunter      vorzurück
         AxeHandle.translate(0,0.65,0.05);
