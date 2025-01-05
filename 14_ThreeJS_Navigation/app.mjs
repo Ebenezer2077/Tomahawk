@@ -2,7 +2,7 @@ import * as THREE from '../99_Lib/three.module.min.js';
 import { keyboard, mouse } from './js/interaction2D.mjs';
 import { add, createLine, loadGLTFcb, randomMaterial, shaderMaterial } from './js/geometry.mjs';
 import { createRay } from './js/ray.mjs';
-import { AmmoPhysics } from '../99_Lib/jsm/physics/AmmoPhysics.js';
+import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js';
 
 import { Water } from '../99_Lib/jsm//objects/Water.js';
 import { Sky } from '../99_Lib/jsm//objects/Sky.js';
@@ -12,7 +12,7 @@ import { VRButton } from '../99_Lib/jsm/webxr/VRButton.js';
 import { createVRcontrollers } from './js/vr.mjs';
 
 window.onload = async function () {
-    const physics = await AmmoPhysics();
+
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 0.3, 2);
 
@@ -32,18 +32,51 @@ window.onload = async function () {
     dirLight.shadow.camera.zoom = 2;
     scene.add(dirLight);
 
+    //new//
+    const Physicsworld = new CANNON.World();
+    Physicsworld.gravity.set(0,-9, 0);
+
+    const defaultMaterial = new CANNON.Material("default");
+    const groundMaterial = new CANNON.Material("ground"); // Material for the ground with high friction
+
+    const contactMaterial = new CANNON.ContactMaterial(defaultMaterial, defaultMaterial, {
+        friction: 1.2, // Increased friction to minimize sliding
+        restitution: 0.01, // Very low bounciness
+    });
+    Physicsworld.addContactMaterial(contactMaterial);
+
+    const groundContactMaterial = new CANNON.ContactMaterial(defaultMaterial, groundMaterial, {
+        friction: 1.2, // Increased friction between blocks and ground
+        restitution: 0.01, // Very low bounciness
+    });
+    Physicsworld.addContactMaterial(groundContactMaterial);
+
+    // Ground
+    const groundShape = new CANNON.Plane();
+    const groundBody = new CANNON.Body({ mass: 0, material: groundMaterial });
+    groundBody.addShape(groundShape);
+    groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+    Physicsworld.addBody(groundBody);
+
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(10, 10),
+        new THREE.MeshStandardMaterial({ color: 0x808080 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+    //end//
+
 
     //////////////////////////////////////////////////////////////////////////////
     // FLOOR
     // const floorMaterial = await shaderMaterial("./shaders/floorVertexShader.glsl", "./shaders/floorFragmentShader.glsl")
 
-
+    /*
     const width = 0.1;
     const box = new THREE.BoxGeometry(10, width, 10, 10, 1, 10);
     const floor = new THREE.Mesh(box, randomMaterial());
     floor.position.y = -1;
     floor.receiveShadow = true;
-    floor.userData.physics = { mass: 0 };
     floor.name = "floor";
 
     const wireframe = new THREE.WireframeGeometry(box);
@@ -54,29 +87,37 @@ window.onload = async function () {
     scene.add(line);
 
     scene.add(floor);
+    */
 
+    
 
     const cursor = add(1, scene);
     const isMouseButton = mouse(cursor);
 
     let objects = [];
     let axe = add(0, world, 0.1, 0.2, 0);
-    axe.userData.physics = { mass: 1 };//axe
+    //axe.userData.physics = { mass: 0 };//axe
     objects.push(axe);//axe
 
+    let Axes = [];
 
-    loadGLTFcb('./models/cube_with_inner_sphere.glb', (gltf) => {
-        gltf.scene.traverse(child => {
-            if (child.name.includes("geo")) {
-                objects.push(child);
-                child.scale.set(0.2, 0.2, 0.2) // scale here
-                child.position.set(1, 0.5, 0);
-                child.updateMatrix();
-                child.matrixAutoUpdate = false;
-            }
-        });
-        world.add(gltf.scene);
-    });
+    //test to include axe in physics
+    function crAxe() {
+        const axeGeometry = axe.geometry;
+        const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+        const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
+        const axeShape = new CANNON.Box(new CANNON.Vec3(0.125, 0.075, 0.375));
+        const axeBody = new CANNON.Body({ mass: 1, material: defaultMaterial });
+        axeBody.addShape(axeShape);
+        axeBody.position.set(0, 4, 0);
+        scene.add(AXE);
+        Physicsworld.addBody(axeBody);
+        objects.push(AXE);
+
+        return {mesh: AXE, body: axeBody};
+    }
+    crAxe();
+    //test end
 
 
     const lineFunc = createLine(scene);
@@ -151,7 +192,7 @@ window.onload = async function () {
     const flySpeedTranslationFactor = -0.02;
     const euler = new THREE.Euler();
 
-    physics.addScene(scene);
+    //physics.addScene(scene);
 
 
     // Renderer-Loop starten
@@ -229,6 +270,8 @@ window.onload = async function () {
             inverseHand = undefined;
         }
         renderer.render(scene, camera);
+
+        
     }
     renderer.setAnimationLoop(render);
 };
