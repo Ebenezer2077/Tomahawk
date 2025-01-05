@@ -118,7 +118,8 @@ window.onload = async function () {
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-
+    /////////WICHTIG!////////
+    //Wir müssen die bodys in Objects speichern und updaten, nicht die Meshs!//
 
     function crAxe() {
         /*
