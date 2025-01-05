@@ -217,7 +217,6 @@ window.onload = async function () {
     const flySpeedTranslationFactor = -0.02;
     const euler = new THREE.Euler();
 
-    //physics.addScene(scene);
 
 
     // Renderer-Loop starten
@@ -234,6 +233,9 @@ window.onload = async function () {
 
         cursor.matrix.decompose(position, rotation, scale);
         lineFunc(0, position);
+        //new
+        //axeBody.position = position;  //WORKS!
+        //end
 
         direction.applyQuaternion(rotation);
 
