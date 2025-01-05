@@ -121,30 +121,27 @@ window.onload = async function () {
     /////////WICHTIG!////////
     //Wir müssen die bodys in Objects speichern und updaten, nicht die Meshs!//
 
-    function crAxe() {
-        /*
+    //function crAxe() {
+        
+        const axeShape = new CANNON.Box(new CANNON.Vec3(0.6, 0.3, 0.6));      
+        const axeBody = new CANNON.Body({ mass: 1, shape: axeShape });
+        axeBody.addShape(axeShape);
+        axeBody.position.set(-1, 10, 0);
+        Physicsworld.addBody(axeBody);
         const axeGeometry = axe.geometry;
         const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
         const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
-        const axeShape = new CANNON.Box(new CANNON.Vec3(0.125, 0.075, 0.375));      //?
-        const axeBody = new CANNON.Body({ mass: 1, material: defaultMaterial });
-        axeBody.addShape(axeShape);
-        axeBody.position.set(0, 0, 0);
-        AXE.position.set(0.5,0.5,0.5);
         scene.add(AXE);
-        axeBody.position = {x: 1, y:1, z:1}
-        Physicsworld.addBody(axeBody);
-        console.log(axeBody);
-        objects.push(AXE);
-        */
+        //objects.push(AXE);
+        
         //return { mesh: block, body: blockBody };
 
         
         
 
         //return {mesh: AXE, body: axeBody};
-    }
-    crAxe();
+    //}
+    //crAxe();
     //test end
 
 
@@ -299,7 +296,7 @@ window.onload = async function () {
         }
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
-        console.log(mesh.position);
+        AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
 
         renderer.render(scene, camera);
 
