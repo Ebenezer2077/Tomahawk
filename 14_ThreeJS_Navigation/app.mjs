@@ -314,7 +314,6 @@ window.onload = async function () {
         rotationQuatY.setFromAxisAngle(new THREE.Vector3(0, -1, 0), Math.PI / 2);
         AxeQuat.multiply(rotationQuatY);
 
-
         AXE.setRotationFromQuaternion(AxeQuat);
 
         axeBody.quaternion.copy(AxeQuat);
@@ -322,6 +321,8 @@ window.onload = async function () {
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
 
+        //vielleicht das bisherige Grap verwenden?
+        //LASS DAS SEIN! MACH ES ÜBER DAS NORMALE GRABBEN!!!
 
 
 
