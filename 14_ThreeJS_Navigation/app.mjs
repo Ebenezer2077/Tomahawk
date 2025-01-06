@@ -240,7 +240,6 @@ window.onload = async function () {
         //new
         axeBody.mass = 0;
         axeBody.position = position;  //WORKS!
-        //axeBody.quaternion = cursor.matrix;//need quaternion of controller
         //end
 
         let firstObjectHitByRay;
@@ -300,12 +299,27 @@ window.onload = async function () {
         } else {
             inverseHand = undefined;
         }
+
+        //myshit
+        let AxeQuat = new THREE.Quaternion();
+        AxeQuat.setFromRotationMatrix(cursor.matrix);
+        const rotationQuatX = new THREE.Quaternion();
+        rotationQuatX.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+        AxeQuat.multiply(rotationQuatX);
+
+        const rotationQuatY = new THREE.Quaternion();
+        rotationQuatY.setFromAxisAngle(new THREE.Vector3(0, -1, 0), Math.PI / 2);
+        AxeQuat.multiply(rotationQuatY);
+
+
+        AXE.setRotationFromQuaternion(AxeQuat);
+
+        axeBody.quaternion.copy(AxeQuat);
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
-        let eu = new THREE.Euler();
-        eu.setFromRotationMatrix(cursor.matrix);
-        AXE.setRotationFromEuler(eu);//testen
+
+
 
 
         renderer.render(scene, camera);
