@@ -237,10 +237,7 @@ window.onload = async function () {
 
         direction.applyQuaternion(rotation);
 
-        //new
-        axeBody.mass = 0;
-        axeBody.position = position;  //WORKS!
-        //end
+        
 
         let firstObjectHitByRay;
         if (grabbedObject === undefined) {
@@ -301,6 +298,12 @@ window.onload = async function () {
         }
 
         //myshit
+        //new
+        axeBody.mass = 0;
+        axeBody.position = position.add(new THREE.Vector3(0,0,-0.8));  //WORKS!
+        console.log(position);
+        //end
+
         let AxeQuat = new THREE.Quaternion();
         AxeQuat.setFromRotationMatrix(cursor.matrix);
         const rotationQuatX = new THREE.Quaternion();
