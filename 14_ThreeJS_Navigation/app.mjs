@@ -132,7 +132,8 @@ window.onload = async function () {
         const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
         const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
         scene.add(AXE);
-        //objects.push(AXE);
+        
+
         
         //return { mesh: block, body: blockBody };
 
@@ -233,11 +234,14 @@ window.onload = async function () {
 
         cursor.matrix.decompose(position, rotation, scale);
         lineFunc(0, position);
-        //new
-        //axeBody.position = position;  //WORKS!
-        //end
 
         direction.applyQuaternion(rotation);
+
+        //new
+        axeBody.mass = 0;
+        axeBody.position = position;  //WORKS!
+        //axeBody.quaternion = cursor.matrix;//need quaternion of controller
+        //end
 
         let firstObjectHitByRay;
         if (grabbedObject === undefined) {
@@ -299,6 +303,10 @@ window.onload = async function () {
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
+        let eu = new THREE.Euler();
+        eu.setFromRotationMatrix(cursor.matrix);
+        AXE.setRotationFromEuler(eu);//testen
+
 
         renderer.render(scene, camera);
 
