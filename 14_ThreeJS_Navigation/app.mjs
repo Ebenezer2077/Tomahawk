@@ -100,6 +100,7 @@ window.onload = async function () {
     objects.push(axe);//axe
 
 
+
     
 
     //test to include axe in physics
@@ -128,12 +129,12 @@ window.onload = async function () {
         axeBody.position.set(0, 10, 0);
         Physicsworld.addBody(axeBody);
 
-        //const axeGeometry = axe.geometry;
-        //const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
-        //const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
+        const axeGeometry = axe.geometry;
+        const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+        const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
 
         //AXE.name = "test";
-        //scene.add(AXE);
+        scene.add(AXE);
 
         //let AxeWrapper = { body: axeBody, mesh: AXE};
         
@@ -278,8 +279,8 @@ window.onload = async function () {
                 } else {
                     grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                     //change begin
-                    //applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
-                    //applyMatrixToBody(axeBody, grabbedObject.matrix);
+                    applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
+                    applyMatrixToBody(axeBody, grabbedObject.matrix);
                     axeBody.mass = 0;
                     axeBody.updateMassProperties();
                     //change end
@@ -327,11 +328,12 @@ window.onload = async function () {
  
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
+        //mesh.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);      //WARUM FÄLLT DAS?
         //console.log("Mesh height = " + axe.position.y);
         //console.log("BodyHeight = " + axeBody.position.y);
         
-        axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
-        axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
+        AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
+        AXE.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
         console.log(axe.position.y);
 
         
