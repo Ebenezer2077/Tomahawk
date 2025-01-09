@@ -97,6 +97,7 @@ window.onload = async function () {
 
     let objects = [];
     let axe = add(0, world, 0.1, 0.2, 0);
+    axe.name = "axe";
     objects.push(axe);//axe
 
 
@@ -135,6 +136,7 @@ window.onload = async function () {
 
         //AXE.name = "test";
         scene.add(AXE);
+        
 
         //let AxeWrapper = { body: axeBody, mesh: AXE};
         
@@ -271,7 +273,14 @@ window.onload = async function () {
 
 
         if (grabbed) {
+            //new shit
+            applyMatrixToBody(axeBody, cursor.matrix);
+            axeBody.mass = 0;
+            axeBody.updateMassProperties();
+            
+            //end new shit
             if (grabbedObject) {
+                console.log(grabbedObject.name);
                 endRay.addVectors(position, direction.multiplyScalar(distance));
                 lineFunc(1, endRay);
                 if (grabbedObject === world) {
@@ -279,8 +288,8 @@ window.onload = async function () {
                 } else {
                     grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                     //change begin
-                    applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
-                    applyMatrixToBody(axeBody, grabbedObject.matrix);
+                    //applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
+                    //applyMatrixToBody(axeBody, grabbedObject.matrix); 
                     axeBody.mass = 0;
                     axeBody.updateMassProperties();
                     //change end
@@ -329,11 +338,16 @@ window.onload = async function () {
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
         //mesh.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);      //WARUM FÄLLT DAS?
+        //AXE fällt nach plan, aber axe nicht?
         //console.log("Mesh height = " + axe.position.y);
         //console.log("BodyHeight = " + axeBody.position.y);
         
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
         AXE.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
+
+        axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
+        axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
+
         console.log(axe.position.y);
 
         
