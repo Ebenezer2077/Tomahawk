@@ -125,7 +125,7 @@ window.onload = async function () {
         
         const axeShape = new CANNON.Box(new CANNON.Vec3(0.6, 0.3, 0.6));      
         const axeBody = new CANNON.Body({ mass: 1, shape: axeShape });
-        axeBody.addShape(axeShape);
+        //axeBody.addShape(axeShape);
         axeBody.position.set(-1, 10, 0);
         Physicsworld.addBody(axeBody);
         const axeGeometry = axe.geometry;
@@ -298,6 +298,7 @@ window.onload = async function () {
         }
 
         //myshit
+        /*
         //new
         axeBody.mass = 0;
         axeBody.position = position.add(new THREE.Vector3(0,0,-0.8));  //WORKS!
@@ -317,10 +318,11 @@ window.onload = async function () {
         AXE.setRotationFromQuaternion(AxeQuat);
 
         axeBody.quaternion.copy(AxeQuat);
+        */
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
-
+        
         //vielleicht das bisherige Grap verwenden?
         //LASS DAS SEIN! MACH ES ÜBER DAS NORMALE GRABBEN!!!
 
