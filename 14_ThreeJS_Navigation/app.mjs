@@ -19,7 +19,7 @@ window.onload = async function () {
 
     const scene = new THREE.Scene();
     const world = new THREE.Group();
-    world.matrixAutoUpdate = false;
+    world.matrixAutoUpdate = true;
     scene.add(world);
 
     scene.background = new THREE.Color(0x666666);
@@ -97,11 +97,10 @@ window.onload = async function () {
 
     let objects = [];
     let axe = add(0, world, 0.1, 0.2, 0);
-    //axe.userData.physics = { mass: 0 };//axe
     objects.push(axe);//axe
 
 
-
+    
 
     //test to include axe in physics
     const boxShape = new CANNON.Box(new CANNON.Vec3(0.1, 0.1, 0.1));
@@ -111,7 +110,7 @@ window.onload = async function () {
     });
     boxBody.position.set(1, 10, 0);
     Physicsworld.addBody(boxBody);
-
+         
     //                      Visualisierrung                 //
     const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -123,21 +122,22 @@ window.onload = async function () {
 
 
         
-        const axeShape = new CANNON.Box(new CANNON.Vec3(0.6, 0.3, 0.6));      
+        const axeShape = new CANNON.Box(new CANNON.Vec3(0.3, 0.6, 0.1));      
         const axeBody = new CANNON.Body({ mass: 1, shape: axeShape });
         //axeBody.addShape(axeShape);
-        axeBody.position.set(-1, 10, 0);
+        axeBody.position.set(0, 10, 0);
         Physicsworld.addBody(axeBody);
-        const axeGeometry = axe.geometry;
-        const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
-        const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
-        AXE.name = "test";
-        scene.add(AXE);
 
-        let AxeWrapper = { body: axeBody, mesh: AXE};
+        //const axeGeometry = axe.geometry;
+        //const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+        //const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
+
+        //AXE.name = "test";
+        //scene.add(AXE);
+
+        //let AxeWrapper = { body: axeBody, mesh: AXE};
         
-        objects.push(AxeWrapper.mesh);//warum auch immer das so gemacht werden muss...
-        console.log(axeBody);
+        //objects.push(AxeWrapper.mesh);//warum auch immer das so gemacht werden muss...
 
 
 
@@ -276,10 +276,13 @@ window.onload = async function () {
                 if (grabbedObject === world) {
                     world.matrix.copy(cursor.matrix.clone().multiply(initialGrabbed));
                 } else {
+                    grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                     //change begin
-                    applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
+                    //applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
+                    //applyMatrixToBody(axeBody, grabbedObject.matrix);
+                    axeBody.mass = 0;
+                    axeBody.updateMassProperties();
                     //change end
-                    //grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                 }
             } else if (firstObjectHitByRay) {
                 grabbedObject = firstObjectHitByRay.object;
@@ -291,6 +294,10 @@ window.onload = async function () {
             }
         } else {
             grabbedObject = undefined;
+            axeBody.mass = 1;
+            axeBody.updateMassProperties();
+
+            
         }
 
         if (squeezed) {
@@ -317,30 +324,16 @@ window.onload = async function () {
         }
 
         //myshit
-        /*
-        //new
-        axeBody.mass = 0;
-        axeBody.position = position.add(new THREE.Vector3(0,0,-0.8));  //WORKS!
-        console.log(position);
-        //end
-
-        let AxeQuat = new THREE.Quaternion();
-        AxeQuat.setFromRotationMatrix(cursor.matrix);
-        const rotationQuatX = new THREE.Quaternion();
-        rotationQuatX.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
-        AxeQuat.multiply(rotationQuatX);
-
-        const rotationQuatY = new THREE.Quaternion();
-        rotationQuatY.setFromAxisAngle(new THREE.Vector3(0, -1, 0), Math.PI / 2);
-        AxeQuat.multiply(rotationQuatY);
-
-        AXE.setRotationFromQuaternion(AxeQuat);
-
-        axeBody.quaternion.copy(AxeQuat);
-        */
+ 
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
-        AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
+        //console.log("Mesh height = " + axe.position.y);
+        //console.log("BodyHeight = " + axeBody.position.y);
+        
+        axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
+        axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
+        console.log(axe.position.y);
+
         
         //vielleicht das bisherige Grap verwenden?
         //LASS DAS SEIN! MACH ES ÜBER DAS NORMALE GRABBEN!!!
