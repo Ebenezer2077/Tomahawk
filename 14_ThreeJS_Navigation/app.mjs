@@ -133,7 +133,9 @@ window.onload = async function () {
         const axeGeometry = axe.geometry;
         const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
         const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
-
+        //Fucks it up
+        objects.push(AXE);
+        //End fucks it up
         //AXE.name = "test";
         scene.add(AXE);
         
@@ -151,8 +153,17 @@ window.onload = async function () {
         matrix.decompose(position, new THREE.Quaternion(), new THREE.Vector3());
     
         // Extrahiere die Rotation (Quaternion) aus der Matrix
-        const quaternion = new THREE.Quaternion();
+        let quaternion = new THREE.Quaternion();
         matrix.decompose(new THREE.Vector3(), quaternion, new THREE.Vector3());
+
+        const quaternionY = new THREE.Quaternion();
+        quaternionY.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI/2);
+        const quaternionX = new THREE.Quaternion();
+        quaternionX.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI);
+        //quaternion.multiply(quaternionY);
+        //quaternion.multiply(quaternionX);
+
+        //IG YOU WANT TO GRAB NORMALY JUST DELETE THE QUATERNION MANIPULATIONS
     
         // Setze die Position des CANNON.Body
         body.position.set(position.x, position.y, position.z);
@@ -288,7 +299,7 @@ window.onload = async function () {
                 } else {
                     grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                     //change begin
-                    //applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
+                     applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                     //applyMatrixToBody(axeBody, grabbedObject.matrix); 
                     axeBody.mass = 0;
                     axeBody.updateMassProperties();
@@ -345,8 +356,8 @@ window.onload = async function () {
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
         AXE.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
 
-        axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
-        axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
+        //axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
+        //axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
 
         console.log(axe.position.y);
 
