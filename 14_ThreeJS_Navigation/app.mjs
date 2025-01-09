@@ -98,7 +98,7 @@ window.onload = async function () {
     let objects = [];
     let axe = add(0, world, 0.1, 0.2, 0);
     //axe.userData.physics = { mass: 0 };//axe
-    //objects.push(axe);//axe
+    objects.push(axe);//axe
 
 
 
@@ -121,7 +121,7 @@ window.onload = async function () {
     /////////WICHTIG!////////
     //Wir müssen die bodys in Objects speichern und updaten, nicht die Meshs!//
 
-    //function crAxe() {
+
         
         const axeShape = new CANNON.Box(new CANNON.Vec3(0.6, 0.3, 0.6));      
         const axeBody = new CANNON.Body({ mass: 1, shape: axeShape });
@@ -131,19 +131,35 @@ window.onload = async function () {
         const axeGeometry = axe.geometry;
         const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
         const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
+        AXE.name = "test";
         scene.add(AXE);
-        
 
+        let AxeWrapper = { body: axeBody, mesh: AXE};
         
-        //return { mesh: block, body: blockBody };
+        objects.push(AxeWrapper.mesh);//warum auch immer das so gemacht werden muss...
+        console.log(axeBody);
 
-        
-        
 
-        //return {mesh: AXE, body: axeBody};
-    //}
-    //crAxe();
-    //test end
+
+    //function to execute matrix on Cannon body//
+    function applyMatrixToBody(body, matrix) {
+        // Extrahiere die Position aus der Matrix
+        const position = new THREE.Vector3();
+        matrix.decompose(position, new THREE.Quaternion(), new THREE.Vector3());
+    
+        // Extrahiere die Rotation (Quaternion) aus der Matrix
+        const quaternion = new THREE.Quaternion();
+        matrix.decompose(new THREE.Vector3(), quaternion, new THREE.Vector3());
+    
+        // Setze die Position des CANNON.Body
+        body.position.set(position.x, position.y, position.z);
+    
+        // Setze die Rotation des CANNON.Body
+        body.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+    }
+    
+
+
 
 
     const lineFunc = createLine(scene);
@@ -260,7 +276,10 @@ window.onload = async function () {
                 if (grabbedObject === world) {
                     world.matrix.copy(cursor.matrix.clone().multiply(initialGrabbed));
                 } else {
-                    grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
+                    //change begin
+                    applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
+                    //change end
+                    //grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                 }
             } else if (firstObjectHitByRay) {
                 grabbedObject = firstObjectHitByRay.object;
