@@ -110,7 +110,7 @@ window.onload = async function () {
         mass: 1,          // Masse > 0 macht den Körper dynamisch (beeinflusst durch Schwerkraft)
         shape: boxShape,  // Form des Körpers
     });
-    boxBody.position.set(1, 10, 0);
+    boxBody.position.set(1, 1, 0);
     Physicsworld.addBody(boxBody);
          
     //                      Visualisierrung                 //
@@ -118,6 +118,7 @@ window.onload = async function () {
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
+    //boxBody.applyLocalImpulse(new CANNON.Vec3(0, 2, 0), new CANNON.Vec3(0,0,0));
 
     /////////WICHTIG!////////
     //Wir müssen die bodys in Objects speichern und updaten, nicht die Meshs!//
@@ -138,6 +139,8 @@ window.onload = async function () {
         //End fucks it up
         //AXE.name = "test";
         scene.add(AXE);
+
+        let ready4Impulse = false;
         
 
         //let AxeWrapper = { body: axeBody, mesh: AXE};
@@ -240,6 +243,9 @@ window.onload = async function () {
 
     const maxDistance = 10;
     direction.set(0, 1, 0);
+    //my shit//
+    let speed;
+    //end//
 
     let grabbedObject, initialGrabbed, distance, inverseHand, inverseWorld;
     const deltaFlyRotation = new THREE.Quaternion();
@@ -247,8 +253,6 @@ window.onload = async function () {
     const flySpeedRotationFactor = 0.01;
     const flySpeedTranslationFactor = -0.02;
     const euler = new THREE.Euler();
-
-
 
     // Renderer-Loop starten
     function render() {
@@ -273,7 +277,7 @@ window.onload = async function () {
         if (grabbedObject === undefined) {
             firstObjectHitByRay = rayFunc(position, direction);
             if (firstObjectHitByRay) {
-                console.log(firstObjectHitByRay.object.name, firstObjectHitByRay.distance);
+                //console.log(firstObjectHitByRay.object.name, firstObjectHitByRay.distance);
                 distance = firstObjectHitByRay.distance;
             } else {
                 distance = maxDistance;
@@ -284,6 +288,10 @@ window.onload = async function () {
 
 
         if (grabbed) {
+            //new new shit
+            ready4Impulse = true;
+            speed = axeBody.velocity;
+            //end end
             //new shit
             applyMatrixToBody(axeBody, cursor.matrix);
             axeBody.mass = 0;
@@ -291,7 +299,7 @@ window.onload = async function () {
             
             //end new shit
             if (grabbedObject) {
-                console.log(grabbedObject.name);
+                //console.log(grabbedObject.name);
                 endRay.addVectors(position, direction.multiplyScalar(distance));
                 lineFunc(1, endRay);
                 if (grabbedObject === world) {
@@ -317,8 +325,11 @@ window.onload = async function () {
             grabbedObject = undefined;
             axeBody.mass = 1;
             axeBody.updateMassProperties();
-
-            
+            if(ready4Impulse) {
+                //axeBody.applyLocalImpulse(new CANNON.Vec3(0, 0, -8), new CANNON.Vec3(0,0,0));
+                axeBody.applyLocalImpulse(speed, new CANNON.Vec3(0,0,0));
+                ready4Impulse = false;
+            }
         }
 
         if (squeezed) {
@@ -358,13 +369,6 @@ window.onload = async function () {
 
         //axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
         //axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
-
-        console.log(axe.position.y);
-
-        
-        //vielleicht das bisherige Grap verwenden?
-        //LASS DAS SEIN! MACH ES ÜBER DAS NORMALE GRABBEN!!!
-
 
 
         renderer.render(scene, camera);
