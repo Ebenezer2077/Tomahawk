@@ -245,6 +245,11 @@ window.onload = async function () {
     direction.set(0, 1, 0);
     //my shit//
     let speed;
+    /*
+    Ich muss die Speed selbst berechnen
+    Da Masse = 1 kann ich Speed = Impuls Vektor setzen I = m*v
+    einfach Abstand der Punkte als Vektor nehmen, einheiten von CANNON js sind in m/s
+    */
     //end//
 
     let grabbedObject, initialGrabbed, distance, inverseHand, inverseWorld;
