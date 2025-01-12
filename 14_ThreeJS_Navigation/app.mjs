@@ -267,10 +267,9 @@ window.onload = async function () {
     const flySpeedTranslationFactor = -0.02;
     const euler = new THREE.Euler();
 
-    let counter = 0;
+    console.log(Physicsworld.bodies);
     // Renderer-Loop starten
     function render() {
-        counter++;
         //60fps
         if (last_active_controller) {
             cursor.matrix.copy(last_active_controller.matrix);
