@@ -244,12 +244,20 @@ window.onload = async function () {
     const maxDistance = 10;
     direction.set(0, 1, 0);
     //my shit//
-    let speed;
+    let impulse;
     /*
     Ich muss die Speed selbst berechnen
     Da Masse = 1 kann ich Speed = Impuls Vektor setzen I = m*v
     einfach Abstand der Punkte als Vektor nehmen, einheiten von CANNON js sind in m/s
     */
+    
+    function calcImpulse(now, prev) {
+        let direct = new CANNON.Vec3();
+        now.vsub(prev, direct);
+        direct.scale(60, direct);
+        return direct;
+    }
+    let now = new CANNON.Vec3(0,0,0), previous = new CANNON.Vec3(0,0,0);
     //end//
 
     let grabbedObject, initialGrabbed, distance, inverseHand, inverseWorld;
@@ -259,9 +267,11 @@ window.onload = async function () {
     const flySpeedTranslationFactor = -0.02;
     const euler = new THREE.Euler();
 
+    let counter = 0;
     // Renderer-Loop starten
     function render() {
-
+        counter++;
+        //60fps
         if (last_active_controller) {
             cursor.matrix.copy(last_active_controller.matrix);
             squeezed = last_active_controller.userData.isSqueezeing;
@@ -293,16 +303,25 @@ window.onload = async function () {
 
 
         if (grabbed) {
-            //new new shit
-            ready4Impulse = true;
-            speed = axeBody.velocity;
-            //end end
+
             //new shit
+            ready4Impulse = true;
             applyMatrixToBody(axeBody, cursor.matrix);
             axeBody.mass = 0;
             axeBody.updateMassProperties();
-            
+                        
             //end new shit
+
+            //new new shit
+
+            //previous = now;
+            //now = axeBody.position;
+            previous = now.clone();
+            now = axeBody.position.clone();
+            impulse = calcImpulse(now, previous);
+            //console.log(impulse);
+
+            //end end
             if (grabbedObject) {
                 //console.log(grabbedObject.name);
                 endRay.addVectors(position, direction.multiplyScalar(distance));
@@ -331,8 +350,7 @@ window.onload = async function () {
             axeBody.mass = 1;
             axeBody.updateMassProperties();
             if(ready4Impulse) {
-                //axeBody.applyLocalImpulse(new CANNON.Vec3(0, 0, -8), new CANNON.Vec3(0,0,0));
-                axeBody.applyLocalImpulse(speed, new CANNON.Vec3(0,0,0));
+                axeBody.applyLocalImpulse(impulse, new CANNON.Vec3(0,0,0));
                 ready4Impulse = false;
             }
         }
