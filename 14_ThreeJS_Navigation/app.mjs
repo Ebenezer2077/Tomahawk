@@ -166,7 +166,7 @@ window.onload = async function () {
         //quaternion.multiply(quaternionY);
         //quaternion.multiply(quaternionX);
 
-        //IG YOU WANT TO GRAB NORMALY JUST DELETE THE QUATERNION MANIPULATIONS
+        //IF YOU WANT TO GRAB NORMALY JUST DELETE THE QUATERNION MANIPULATIONS
     
         // Setze die Position des CANNON.Body
         body.position.set(position.x, position.y, position.z);
@@ -300,15 +300,16 @@ window.onload = async function () {
             endRay.addVectors(position, direction.multiplyScalar(distance));
             lineFunc(1, endRay);
         }
-
-
+        //hier hebt sich der body vom boden, im grabed loop nicht?
+        //warum?
         if (grabbed) {
 
             //new shit
             ready4Impulse = true;
-            applyMatrixToBody(axeBody, cursor.matrix);
             axeBody.mass = 0;
             axeBody.updateMassProperties();
+            applyMatrixToBody(axeBody, cursor.matrix);
+            console.log(axeBody.position);
                         
             //end new shit
 
@@ -319,7 +320,6 @@ window.onload = async function () {
             previous = now.clone();
             now = axeBody.position.clone();
             impulse = calcImpulse(now, previous);
-            //console.log(impulse);
 
             //end end
             if (grabbedObject) {
