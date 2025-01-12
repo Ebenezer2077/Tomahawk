@@ -302,13 +302,13 @@ window.onload = async function () {
         }
         //hier hebt sich der body vom boden, im grabed loop nicht?
         //warum?
+        //console.log(axeBody.position);
         if (grabbed) {
-
             //new shit
             ready4Impulse = true;
             axeBody.mass = 0;
             axeBody.updateMassProperties();
-            applyMatrixToBody(axeBody, cursor.matrix);
+            //applyMatrixToBody(axeBody, cursor.matrix);
             console.log(axeBody.position);
                         
             //end new shit
