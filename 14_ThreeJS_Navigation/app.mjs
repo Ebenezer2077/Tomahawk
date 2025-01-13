@@ -323,7 +323,6 @@ window.onload = async function () {
             impulse = calcImpulse(now, previous);
             */
             //test end
-
             //end end
             if (grabbedObject) {
 
