@@ -86,10 +86,7 @@ export function createAxe() {
         const AxeHandle = new THREE.CylinderGeometry(0.05, 0.05, 1.2, 64);
         //  linksrechts     hochrunter      vorzurück
         AxeHandle.translate(0,0.65,0.05);
-        const AxeHead = new THREE.BoxGeometry(0.25, 0.25, 0.05);
-        AxeHead.translate(0.1,0.6,0);
-        const merged = mergeGeometries([AxeHandle.toNonIndexed(), createAxeHead()])
-        //merged.userData.physics = { mass: 1 };
+        const merged = mergeGeometries([AxeHandle.toNonIndexed(), createAxeHead()]);
         return merged;
 }
 

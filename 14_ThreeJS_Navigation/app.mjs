@@ -117,6 +117,7 @@ window.onload = async function () {
     const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const mesh = new THREE.Mesh(geometry, material);
+    objects.push(mesh);
     scene.add(mesh);
     //boxBody.applyLocalImpulse(new CANNON.Vec3(0, 2, 0), new CANNON.Vec3(0,0,0));
 
@@ -127,17 +128,16 @@ window.onload = async function () {
         
         const axeShape = new CANNON.Box(new CANNON.Vec3(0.3, 0.6, 0.1));      
         const axeBody = new CANNON.Body({ mass: 1, shape: axeShape });
-        //axeBody.addShape(axeShape);
-        axeBody.position.set(0, 10, 0);
+
+        axeBody.position.set(-1, 10, 0);
         Physicsworld.addBody(axeBody);
 
         const axeGeometry = axe.geometry;
         const axeMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
         const AXE = new THREE.Mesh(axeGeometry, axeMaterial);
-        //Fucks it up
+
         objects.push(AXE);
-        //End fucks it up
-        //AXE.name = "test";
+
         scene.add(AXE);
 
         let ready4Impulse = false;
@@ -254,7 +254,8 @@ window.onload = async function () {
     function calcImpulse(now, prev) {
         let direct = new CANNON.Vec3();
         now.vsub(prev, direct);
-        direct.scale(60, direct);
+        console.log(direct);
+        direct.scale(6, direct);
         return direct;
     }
     let now = new CANNON.Vec3(0,0,0), previous = new CANNON.Vec3(0,0,0);
@@ -268,6 +269,7 @@ window.onload = async function () {
     const euler = new THREE.Euler();
 
     console.log(Physicsworld.bodies);
+    let positions = [];
     // Renderer-Loop starten
     function render() {
         //60fps
@@ -291,7 +293,6 @@ window.onload = async function () {
         if (grabbedObject === undefined) {
             firstObjectHitByRay = rayFunc(position, direction);
             if (firstObjectHitByRay) {
-                //console.log(firstObjectHitByRay.object.name, firstObjectHitByRay.distance);
                 distance = firstObjectHitByRay.distance;
             } else {
                 distance = maxDistance;
@@ -299,30 +300,33 @@ window.onload = async function () {
             endRay.addVectors(position, direction.multiplyScalar(distance));
             lineFunc(1, endRay);
         }
-        //hier hebt sich der body vom boden, im grabed loop nicht?
-        //warum?
-        //console.log(axeBody.position);
+
         if (grabbed) {
             //new shit
             ready4Impulse = true;
             axeBody.mass = 0;
             axeBody.updateMassProperties();
-            //applyMatrixToBody(axeBody, cursor.matrix);
-            console.log(axeBody.position);
+            //console.log(axeBody.position);
                         
             //end new shit
 
             //new new shit
-
-            //previous = now;
-            //now = axeBody.position;
+            //test
+            positions.push(axeBody.position.clone());
+            if(positions.length > 11) {
+                positions.shift();
+            }
+            impulse = calcImpulse(axeBody.position.clone(), positions[0]);
+            /*
             previous = now.clone();
             now = axeBody.position.clone();
             impulse = calcImpulse(now, previous);
+            */
+            //test end
 
             //end end
             if (grabbedObject) {
-                //console.log(grabbedObject.name);
+
                 endRay.addVectors(position, direction.multiplyScalar(distance));
                 lineFunc(1, endRay);
                 if (grabbedObject === world) {
@@ -330,8 +334,7 @@ window.onload = async function () {
                 } else {
                     grabbedObject.matrix.copy(inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                     //change begin
-                     applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
-                    //applyMatrixToBody(axeBody, grabbedObject.matrix); 
+                    applyMatrixToBody(axeBody, inverseWorld.clone().multiply(cursor.matrix).multiply(initialGrabbed));
                     axeBody.mass = 0;
                     axeBody.updateMassProperties();
                     //change end
@@ -341,14 +344,16 @@ window.onload = async function () {
                 inverseWorld = world.matrix.clone().invert();
                 initialGrabbed = cursor.matrix.clone().invert().multiply(world.matrix).multiply(grabbedObject.matrix);
             } else {
-                grabbedObject = world;
-                initialGrabbed = cursor.matrix.clone().invert().multiply(world.matrix);
+                //grabbedObject = world;
+                //initialGrabbed = cursor.matrix.clone().invert().multiply(world.matrix);
+                applyMatrixToBody(axeBody, cursor.matrix);
             }
         } else {
             grabbedObject = undefined;
             axeBody.mass = 1;
             axeBody.updateMassProperties();
             if(ready4Impulse) {
+                console.log(impulse);
                 axeBody.applyLocalImpulse(impulse, new CANNON.Vec3(0,0,0));
                 ready4Impulse = false;
             }
@@ -385,7 +390,8 @@ window.onload = async function () {
         //AXE fällt nach plan, aber axe nicht?
         //console.log("Mesh height = " + axe.position.y);
         //console.log("BodyHeight = " + axeBody.position.y);
-        
+
+
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
         AXE.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
 
