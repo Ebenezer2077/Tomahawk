@@ -142,10 +142,22 @@ window.onload = async function () {
 
         let ready4Impulse = false;
         
-
-        //let AxeWrapper = { body: axeBody, mesh: AXE};
-        
         //objects.push(AxeWrapper.mesh);//warum auch immer das so gemacht werden muss...
+
+        //TARGET//
+        const targetShape = new CANNON.Cylinder(3,3,0.5,20);
+        const TargetBody = new CANNON.Body({ mass: 0, shapa: targetShape});
+        TargetBody.position.set(0, 3, -2);
+        Physicsworld.addBody(TargetBody);
+        const TargetGeometry = new THREE.CylinderGeometry(3,3,0.5,20);
+        const TargetMaterial = new THREE.MeshStandardMaterial({ color: 0x8c7a2b });
+        const TARGET = new THREE.Mesh(TargetGeometry, TargetMaterial);
+        TARGET.rotateX(Math.PI/2);
+        TARGET.translateY(-7);
+        TARGET.translateZ(-3);
+        scene.add(TARGET);
+
+
 
 
 
