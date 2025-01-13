@@ -162,13 +162,13 @@ window.onload = async function () {
         //TARGET.translateZ(-3);
         scene.add(TARGET);
 
-        let spotOfHit;
-        let rotOfHit = new CANNON.Quaternion();
         let IsInTarget = false;
         TargetBody.addEventListener('collide', (event) => {
+            axeBody.mass = 0;
+            axeBody.updateMassProperties();
+            let stationary = new CANNON.Vec3(0,0,0);
+            axeBody.velocity.copy(stationary);
             IsInTarget = true;
-            spotOfHit = axeBody.position.clone();
-            rotOfHit.copy(axeBody.quaternion);
         });
 
 
@@ -374,8 +374,10 @@ window.onload = async function () {
             }
         } else {
             grabbedObject = undefined;
-            axeBody.mass = 1;
-            axeBody.updateMassProperties();
+            if(!IsInTarget) {
+                axeBody.mass = 1;
+                axeBody.updateMassProperties();
+            }
             if(ready4Impulse) {
                 console.log(impulse);
                 axeBody.applyLocalImpulse(impulse, new CANNON.Vec3(0,0,0));
@@ -423,11 +425,6 @@ window.onload = async function () {
         //axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
 
         TARGET.position.set(TargetBody.position.x, TargetBody.position.y, TargetBody.position.z);
-
-        if(IsInTarget) {
-            axeBody.position.set(spotOfHit.x, spotOfHit.y, spotOfHit.z);
-            axeBody.quaternion.copy(rotOfHit);
-        }
         
 
         renderer.render(scene, camera);
