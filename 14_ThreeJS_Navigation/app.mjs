@@ -146,18 +146,30 @@ window.onload = async function () {
 
         //TARGET//
         const targetShape = new CANNON.Cylinder(3,3,0.5,20);
-        const TargetBody = new CANNON.Body({ mass: 0, shapa: targetShape});
-        TargetBody.position.set(0, 3, -2);
+        const TargetBody = new CANNON.Body({ mass: 0, shape: targetShape});
+
+        let rotationQuat = new CANNON.Quaternion();
+        rotationQuat.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI/2);
+        TargetBody.quaternion.copy(rotationQuat);
+
+        TargetBody.position.set(0, 4, -2.5);
         Physicsworld.addBody(TargetBody);
         const TargetGeometry = new THREE.CylinderGeometry(3,3,0.5,20);
         const TargetMaterial = new THREE.MeshStandardMaterial({ color: 0x8c7a2b });
         const TARGET = new THREE.Mesh(TargetGeometry, TargetMaterial);
         TARGET.rotateX(Math.PI/2);
-        TARGET.translateY(-7);
-        TARGET.translateZ(-3);
+        //TARGET.translateY(-2);
+        //TARGET.translateZ(-3);
         scene.add(TARGET);
 
-
+        let spotOfHit;
+        let rotOfHit = new CANNON.Quaternion();
+        let IsInTarget = false;
+        TargetBody.addEventListener('collide', (event) => {
+            IsInTarget = true;
+            spotOfHit = axeBody.position.clone();
+            rotOfHit.copy(axeBody.quaternion);
+        });
 
 
 
@@ -314,6 +326,7 @@ window.onload = async function () {
         }
 
         if (grabbed) {
+            IsInTarget = false;
             //new shit
             ready4Impulse = true;
             axeBody.mass = 0;
@@ -409,6 +422,13 @@ window.onload = async function () {
         //axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
         //axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
 
+        TARGET.position.set(TargetBody.position.x, TargetBody.position.y, TargetBody.position.z);
+
+        if(IsInTarget) {
+            axeBody.position.set(spotOfHit.x, spotOfHit.y, spotOfHit.z);
+            axeBody.quaternion.copy(rotOfHit);
+        }
+        
 
         renderer.render(scene, camera);
 
