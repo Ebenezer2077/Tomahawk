@@ -67,19 +67,6 @@ window.onload = async function () {
     axe.name = "axe";
     objects.push(axe);
 
-    const boxShape = new CANNON.Box(new CANNON.Vec3(0.1, 0.1, 0.1));
-    const boxBody = new CANNON.Body({
-        mass: 1,
-        shape: boxShape,
-    });
-    boxBody.position.set(1, 1, 0);
-    Physicsworld.addBody(boxBody);
-         
-    const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const mesh = new THREE.Mesh(geometry, material);
-    objects.push(mesh);
-    scene.add(mesh);
 
     const axeShape = new CANNON.Box(new CANNON.Vec3(0.3, 0.6, 0.1));      
     const axeBody = new CANNON.Body({ mass: 1, shape: axeShape });
@@ -312,7 +299,6 @@ window.onload = async function () {
         }
  
         Physicsworld.step(1/60);
-        mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
 
         AXE.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
         AXE.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
