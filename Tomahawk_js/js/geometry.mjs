@@ -1,34 +1,11 @@
 import * as THREE from '../../99_Lib/three.module.min.js';
 
-import { GLTFLoader } from '../../99_Lib/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from '../../99_Lib/jsm/utils/BufferGeometryUtils.js';
-// import vertexShader from '../shaders/vertexShader.glsl'
-// import fragmentShader from '../shaders/fragmentShader.glsl'
-// import test from '../shaders/test'
 
-
-
-
-function httpGetAsync(theUrl) {
-    return new Promise((resolve, reject) => {
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState === 4)
-                if (xmlHttp.status === 200)
-                    resolve(xmlHttp.responseText);
-                else
-                    reject(`Error: ${xmlHttp.status}`);
-        }
-        xmlHttp.open("GET", theUrl, true);
-        xmlHttp.send(null);
-    });
-
-}
 
 export async function shaderMaterial(vertexShaderFile, fragmentShaderFile) {
     const vertexShader = await httpGetAsync(vertexShaderFile);
     const fragmentShader = await httpGetAsync(fragmentShaderFile);
-    // console.log(vertexShader, fragmentShader);
 
     const material = new THREE.ShaderMaterial({
         uniforms: { 'thickness': { value: 1 } },
@@ -44,31 +21,6 @@ export async function shaderMaterial(vertexShaderFile, fragmentShaderFile) {
 }
 
 console.log("ThreeJs " + THREE.REVISION);
-
-
-const loader = new GLTFLoader();
-
-export function loadGLTF(filename, parent) {
-    loader.load(filename, function (gltf) {
-        gltf.scene.scale.set(0.2, 0.2, 0.2) // scale here
-        gltf.scene.position.set(1, 0.5, 0);
-
-        gltf.scene.traverse(child => {
-            if (child.material) child.material.metalness = 0;
-        });
-        parent.add(gltf.scene);
-    }, undefined, function (error) {
-        console.error(error);
-    });
-}
-
-export function loadGLTFcb(filename, cb) {
-    loader.load(filename, cb, undefined, function (error) {
-        console.error(error);
-    });
-}
-
-
 
 const geometries = [
     createAxe(),

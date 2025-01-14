@@ -204,7 +204,6 @@ window.onload = async function () {
     function calcImpulse(now, prev) {
         let direct = new CANNON.Vec3();
         now.vsub(prev, direct);
-        console.log(direct);
         direct.scale(6, direct);
         return direct;
     }
@@ -216,7 +215,6 @@ window.onload = async function () {
     const flySpeedTranslationFactor = -0.02;
     const euler = new THREE.Euler();
 
-    console.log(Physicsworld.bodies);
     let positions = [];
     function render() {
         //60fps
@@ -284,7 +282,6 @@ window.onload = async function () {
                 axeBody.updateMassProperties();
             }
             if(ready4Impulse) {
-                console.log(impulse);
                 axeBody.applyLocalImpulse(impulse, new CANNON.Vec3(0,0,0));
                 ready4Impulse = false;
             }
@@ -312,8 +309,6 @@ window.onload = async function () {
         } else {
             inverseHand = undefined;
         }
-
-        //myshit
  
         Physicsworld.step(1/60);
         mesh.position.set(boxBody.position.x, boxBody.position.y, boxBody.position.z);
