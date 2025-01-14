@@ -142,10 +142,34 @@ window.onload = async function () {
 
         let ready4Impulse = false;
         
-
-        //let AxeWrapper = { body: axeBody, mesh: AXE};
-        
         //objects.push(AxeWrapper.mesh);//warum auch immer das so gemacht werden muss...
+
+        //TARGET//
+        const targetShape = new CANNON.Cylinder(3,3,0.5,20);
+        const TargetBody = new CANNON.Body({ mass: 0, shape: targetShape});
+
+        let rotationQuat = new CANNON.Quaternion();
+        rotationQuat.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI/2);
+        TargetBody.quaternion.copy(rotationQuat);
+
+        TargetBody.position.set(0, 4, -2.5);
+        Physicsworld.addBody(TargetBody);
+        const TargetGeometry = new THREE.CylinderGeometry(3,3,0.5,20);
+        const TargetMaterial = new THREE.MeshStandardMaterial({ color: 0x8c7a2b });
+        const TARGET = new THREE.Mesh(TargetGeometry, TargetMaterial);
+        TARGET.rotateX(Math.PI/2);
+        //TARGET.translateY(-2);
+        //TARGET.translateZ(-3);
+        scene.add(TARGET);
+
+        let IsInTarget = false;
+        TargetBody.addEventListener('collide', (event) => {
+            axeBody.mass = 0;
+            axeBody.updateMassProperties();
+            let stationary = new CANNON.Vec3(0,0,0);
+            axeBody.velocity.copy(stationary);
+            IsInTarget = true;
+        });
 
 
 
@@ -302,6 +326,7 @@ window.onload = async function () {
         }
 
         if (grabbed) {
+            IsInTarget = false;
             //new shit
             ready4Impulse = true;
             axeBody.mass = 0;
@@ -349,8 +374,10 @@ window.onload = async function () {
             }
         } else {
             grabbedObject = undefined;
-            axeBody.mass = 1;
-            axeBody.updateMassProperties();
+            if(!IsInTarget) {
+                axeBody.mass = 1;
+                axeBody.updateMassProperties();
+            }
             if(ready4Impulse) {
                 console.log(impulse);
                 axeBody.applyLocalImpulse(impulse, new CANNON.Vec3(0,0,0));
@@ -397,6 +424,8 @@ window.onload = async function () {
         //axe.position.set(axeBody.position.x, axeBody.position.y, axeBody.position.z);
         //axe.quaternion.set(axeBody.quaternion.x, axeBody.quaternion.y, axeBody.quaternion.z, axeBody.quaternion.w);
 
+        TARGET.position.set(TargetBody.position.x, TargetBody.position.y, TargetBody.position.z);
+        
 
         renderer.render(scene, camera);
 
