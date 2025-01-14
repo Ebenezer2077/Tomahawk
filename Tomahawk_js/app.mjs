@@ -97,16 +97,16 @@ window.onload = async function () {
 
     let ready4Impulse = false;
         
-    const targetShape = new CANNON.Cylinder(3,3,0.5,20);
+    const targetShape = new CANNON.Cylinder(1,1,0.5,20);
     const TargetBody = new CANNON.Body({ mass: 0, shape: targetShape});
 
     let rotationQuat = new CANNON.Quaternion();
     rotationQuat.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI/2);
     TargetBody.quaternion.copy(rotationQuat);
 
-    TargetBody.position.set(0, 4, -2.5);
+    TargetBody.position.set(0, 1.5, -2.5);
     Physicsworld.addBody(TargetBody);
-    const TargetGeometry = new THREE.CylinderGeometry(3,3,0.5,20);
+    const TargetGeometry = new THREE.CylinderGeometry(1,1,0.5,20);
     const TargetMaterial = new THREE.MeshStandardMaterial({ color: 0x8c7a2b });
     const TARGET = new THREE.Mesh(TargetGeometry, TargetMaterial);
     TARGET.rotateX(Math.PI/2);
@@ -118,6 +118,7 @@ window.onload = async function () {
         axeBody.updateMassProperties();
         let stationary = new CANNON.Vec3(0,0,0);
         axeBody.velocity.copy(stationary);
+        axeBody.angularVelocity.copy(stationary);
         IsInTarget = true;
     });
 
